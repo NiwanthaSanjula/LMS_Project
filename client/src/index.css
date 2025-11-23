@@ -1,0 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Outfit:wght@100..900&family=Poiret+One&family=Telex&display=swap');
+@import "tailwindcss";
+
+*{
+    font-family: "Outfit", sans-serif
+}
