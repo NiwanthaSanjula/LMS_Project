@@ -4,7 +4,7 @@ import SearchBar from './SearchBar'
 
 const Hero = () => {
   return (
-    <div className='flex min-h-[20vh] flex-col items-center justify-center w-full md:pt-36 pt-20 px-7  
+    <div className='flex min-h-[70vh] flex-col items-center justify-center w-full md:pt-36 pt-20 px-7  
                     md:px-0 space-y-7 text-center bg-top bg-cover bg-fixed '
           style={{
             backgroundImage : `url(${assets.hero_bg})`

@@ -24,6 +24,15 @@
     --text-default: 15px;
     --text-default--line-height: 21px;
 
+    --grid-cols-auto: repeat(auto-fit, minmax(200px, 1fr));
+
+    --shadow-right: 6px 6px 12px rgba(0,0,0,0.5);
+    --shadow-right-hover: 6px 16px 26px rgba(0,0,0,0.5)
+
+
+
+
+
 
 
 
