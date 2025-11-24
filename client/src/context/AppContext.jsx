@@ -12,6 +12,7 @@ export const AppContextProvider = (props) => {
     const currency = import.meta.env.VITE_CURRENCY
     const navigate = useNavigate()
     const [allCourses, setAllCourses] = useState([])
+    const [isEducator, setIsEducator] = useState(false)
 
     //fetch all courses
     const fetchAllCourses = async () => {
@@ -36,7 +37,8 @@ export const AppContextProvider = (props) => {
         currency,
         allCourses,
         navigate,
-        calculateRating
+        calculateRating,
+        isEducator, setIsEducator
     }
 
     useEffect(() => {
