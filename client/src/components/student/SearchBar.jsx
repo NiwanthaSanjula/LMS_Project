@@ -25,7 +25,10 @@ const SearchBar = ({data}) => {
           type="text" 
           placeholder='Search courses' 
           className=' w-full h-full outline-none text-gray-500/80' 
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {
+            setInput(e.target.value)
+            navigate('/course-list/' + e.target.value); //live search route
+          }}
           value={input}
         />
 
