@@ -41,7 +41,7 @@ const CourseDetails = () => {
 
   useEffect(() => {
     fetchCourseData()
-  }, [])
+  }, [allCourses])
 
 
 
