@@ -7,6 +7,7 @@ import Loading from '../../components/student/Loading'
 import { assets } from '../../assets/assets'
 import humanizeDuration from 'humanize-duration'
 import Footer from '../../components/student/Footer'
+import YouTube from 'react-youtube'
 
 const CourseDetails = () => {
 
@@ -22,6 +23,7 @@ const CourseDetails = () => {
   const [courseData, setCourseData] = useState(null)
   const [openSections, setOpenSections] = useState({})
   const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(false)
+  const [playerData, setPlayerData] = useState(null)
 
   const fetchCourseData = async () => {
     const findCourse = allCourses.find(course => course._id === id)
@@ -119,7 +121,15 @@ const CourseDetails = () => {
                                 <p>{lecture.lectureTitle}</p>
 
                                 <div className='flex gap-2'>
-                                  {lecture.isPreviewFree && <p className='text-blue-500 font-medium cursor-pointer'>Preview</p>}
+                                  {lecture.isPreviewFree && 
+                                    <p 
+                                      className='text-blue-500 font-medium cursor-pointer' 
+                                      onClick={() => setPlayerData({
+                                        videoId: lecture.lectureUrl.split('/').pop()
+                                      })}
+                                    >
+                                      Preview
+                                    </p>}
                                   <p>{humanizeDuration(lecture.lectureDuration * 60 * 1000, {units:['h', 'm']})}</p>
                                 </div>
                               </div>
@@ -147,7 +157,13 @@ const CourseDetails = () => {
 
           {/**Right Column */}
           <div className=' max-w-course-card z-10 shadow-(--shadow-right) rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px] '>
-            <img src={courseData.courseThumbnail} alt="" className='rounded-t md:rounded-none'/>
+            
+            {
+              playerData ? 
+                <YouTube videoId={playerData.videoId} options={{playerVars: {autoplay: 1}}} iframeClassName='w-full aspect-video' />
+
+              : <img src={courseData.courseThumbnail} alt="" className='rounded-t md:rounded-none'/>
+            }
 
             <div className='p-5'>
                   <div className='flex items-center gap-2'>
