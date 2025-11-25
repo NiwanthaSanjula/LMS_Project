@@ -1,4 +1,5 @@
 import logo from './logo.svg'
+import hero_bg from './hero_bg.jpg'
 import logo_dark from './logo_dark.svg'
 import search_icon from './search_icon.svg'
 import cross_icon from './cross_icon.svg'
@@ -46,6 +47,7 @@ import lesson_icon from './lesson_icon.svg'
 
 export const assets = {
     logo,
+    hero_bg,
     search_icon,
     sketch,
     microsoft_logo,
@@ -90,6 +92,14 @@ export const assets = {
     blue_tick_icon,
     lesson_icon
 }
+
+export const companiesIcons = [
+    microsoft_logo,
+    walmart_logo,
+    accenture_logo,
+    adobe_logo,
+    paypal_logo,
+]
 
 export const dummyEducatorData = {
     "_id": "675ac1512100b91a6d9b8b24",
