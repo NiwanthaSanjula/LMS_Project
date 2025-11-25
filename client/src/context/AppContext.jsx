@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useEffect, useState } from 'react';
@@ -15,6 +15,7 @@ export const AppContextProvider = (props) => {
     const navigate = useNavigate()
     const [allCourses, setAllCourses] = useState([])
     const [isEducator, setIsEducator] = useState(false)
+    const [enrolledCourses, setEnrolledCourses] = useState([])
 
     //fetch all courses
     const fetchAllCourses = async () => {
@@ -72,6 +73,18 @@ export const AppContextProvider = (props) => {
     }
 
 
+    //fetch user enrolled courses
+    const fetchUserEnrolledCourses = async () => {
+        setEnrolledCourses(dummyCourses)
+    }
+
+    
+    useEffect(() => {
+        fetchAllCourses()
+        fetchUserEnrolledCourses()
+    }, [])
+
+
     
     const value = {
         currency,
@@ -81,13 +94,11 @@ export const AppContextProvider = (props) => {
         isEducator, setIsEducator,
         calculateChaperTime,
         calculateCourseDuration,
-        calculateNoOfLectures
+        calculateNoOfLectures,
+        enrolledCourses,
+        fetchUserEnrolledCourses
     }
-
-    useEffect(() => {
-      fetchAllCourses()
-    }, [])
-
+    
     return (
         <AppContext.Provider value={value}>
             {props.children}
