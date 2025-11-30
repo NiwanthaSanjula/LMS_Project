@@ -3,6 +3,8 @@ import User from '../models/user.js'
 
 //API controller to manage Clerk with database
 export const clerkWebHooks = async (req, res) => {
+    console.log("webhook hits");
+    
     try {
         // Convert raw buffer to string
         const payloadString = req.body.toString()
