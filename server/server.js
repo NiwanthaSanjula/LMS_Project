@@ -13,11 +13,19 @@ await connectDB()
 //middleware
 app.use(cors())
 
+// TEST endpoint - check if this works first
+app.post('/clerk', (req, res) => {
+    console.log("🔥 CLERK ENDPOINT HIT!")
+    console.log("Headers:", req.headers)
+    console.log("Method:", req.method)
+    res.json({ message: "Endpoint reached!" })
+})
+
 // IMPORTANT: Webhook route BEFORE express.json() - needs raw body
-app.post('/clerk', 
+/*app.post('/clerk', 
     express.raw({ type: 'application/json' }), 
     clerkWebHooks
-)
+)*/
 
 // Regular JSON parsing for other routes
 app.use(express.json())
