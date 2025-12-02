@@ -7,6 +7,7 @@ import { clerkWebHooks } from './controllers/webhooks.js'
 import educatorRouter from './routes/educatorRoute.js'
 import connectCloudinary from './configs/cloudinary.js'
 import courseRouter from './routes/courseRoute.js'
+import userRouter from './routes/userRoutes.js'
 
 //init express
 const app = express()
@@ -24,6 +25,8 @@ app.get('/', (req, res) => res.send("API Working"))
 app.post('/clerk', express.json(), clerkWebHooks)
 app.use('/api/educator', express.json(), educatorRouter)
 app.use('/api/course', express.json(), courseRouter)
+app.use('/api/user', express.json(), userRouter)
+
 
 
 //PORT
