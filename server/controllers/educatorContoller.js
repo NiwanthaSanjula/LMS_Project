@@ -74,7 +74,7 @@ export const getEducatorCourses = async(req, res) => {
 
 
 //Get educator Dashboard data ( Total Earning, Enrolled Students, No. of Courses)
-const educatorDashboard = async (req, res) => {
+export const educatorDashboard = async (req, res) => {
     try {
         const educator = req.auth.userId
         const courses = await Course.find({educator})

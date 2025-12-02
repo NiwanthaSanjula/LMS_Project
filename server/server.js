@@ -6,6 +6,7 @@ import connectDB from './configs/mongoDb.js'
 import { clerkWebHooks } from './controllers/webhooks.js'
 import educatorRouter from './routes/educatorRoute.js'
 import connectCloudinary from './configs/cloudinary.js'
+import courseRouter from './routes/courseRoute.js'
 
 //init express
 const app = express()
@@ -22,6 +23,8 @@ app.use(clerkMiddleware())
 app.get('/', (req, res) => res.send("API Working"))
 app.post('/clerk', express.json(), clerkWebHooks)
 app.use('/api/educator', express.json(), educatorRouter)
+app.use('/api/course', express.json(), courseRouter)
+
 
 //PORT
 const PORT = process.env.PORT || 5000
