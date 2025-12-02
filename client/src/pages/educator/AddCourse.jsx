@@ -117,7 +117,7 @@ const AddCourse = () => {
     <div className='min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-4 md:p-8'>
       <div className='max-w-5xl'>
         <div className='mb-8'>
-          <h1 className='text-xl font-semibold text-slate-800 mb-2'>Create New Course</h1>
+          <h1 className='text-3xl font-bold text-slate-800 mb-2'>Create New Course</h1>
           <p className='text-slate-600'>Fill in the details below to add a new course to the platform</p>
         </div>
 
