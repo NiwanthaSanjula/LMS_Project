@@ -18,18 +18,21 @@ await connectCloudinary()
 
 //middleware
 app.use(cors())
+
+// IMPORTANT: Webhook routes MUST come BEFORE express.json() and other middleware
+// Stripe needs the raw body for signature verification
+app.post('/stripe', express.raw({type:'application/json'}), stripeWebhooks)
+app.post('/clerk', express.json(), clerkWebHooks)
+
+// Now apply other middleware
+app.use(express.json())
 app.use(clerkMiddleware())
 
 //Routes
 app.get('/', (req, res) => res.send("API Working"))
-app.post('/clerk', express.json(), clerkWebHooks)
-app.use('/api/educator', express.json(), educatorRouter)
-app.use('/api/course', express.json(), courseRouter)
-app.use('/api/user', express.json(), userRouter)
-app.post('/stripe', express.raw({type:'application/json'}), stripeWebhooks )
-
-
-
+app.use('/api/educator', educatorRouter)
+app.use('/api/course', courseRouter)
+app.use('/api/user', userRouter)
 
 //PORT
 const PORT = process.env.PORT || 5000
@@ -37,4 +40,3 @@ const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
     console.log(`server is running on http://localhost:${PORT}`);
 })
-
