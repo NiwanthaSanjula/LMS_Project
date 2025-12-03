@@ -34,7 +34,12 @@ app.post('/stripe', express.raw({type:'application/json'}), stripeWebhooks )
 //PORT
 const PORT = process.env.PORT || 5000
 
-app.listen(PORT, () => {
-    console.log(`server is running on http://localhost:${PORT}`);
-})
+// Only use app.listen for local development
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+      console.log(`server is running on http://localhost:${PORT}`);
+    })
+  }
 
+// REQUIRED for Vercel: Export the Express app
+export default app
