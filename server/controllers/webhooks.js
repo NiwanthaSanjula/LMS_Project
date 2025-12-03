@@ -70,19 +70,20 @@ export const clerkWebHooks = async (req, res) => {
 //Handling stripe webhooks
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-export const stripeWebhooks = async (request, response) => {
-    const sig = request.headers['stripe-signature'];
+export const stripeWebhooks = async (req, res) => { // Changed from (request, response)
+    const sig = req.headers['stripe-signature'];
 
     let event;
     try {
         event = Stripe.webhooks.constructEvent(
-            request.body, 
+            req.body, 
             sig, 
             process.env.STRIPE_WEBHOOK_SECRET
         );
     }
     catch (err) {
-        response.status(400).send(`Webhook Error: ${err.message}`);
+        console.error('Webhook signature verification failed:', err.message);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
     console.log('Webhook event received:', event.type);
@@ -219,13 +220,13 @@ export const stripeWebhooks = async (request, response) => {
                 console.log(`Unhandled event type ${event.type}`);
         }
 
-        // Return success response
-        res.json({ received: true });
+        // Return success response - THIS WAS THE MAIN BUG
+        return res.json({ received: true });
 
     } catch (error) {
         console.error('Error processing webhook:', error);
         // Still return 200 to prevent Stripe from retrying
-        res.json({ 
+        return res.json({ 
             received: true, 
             error: error.message 
         });
