@@ -94,6 +94,8 @@ export const purchaseCourse = async (req, res) => {
             }
         })
         res.json({success: true, session_url: session.url })
+        console.log('Purchase Course Ends');
+        
 
     } catch (error) {
         console.log(error);

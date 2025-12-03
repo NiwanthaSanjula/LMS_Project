@@ -64,22 +64,25 @@ export const clerkWebHooks = async (req, res) => {
     }
 }
 
+
+
+
+//Handling stripe webhooks
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-export const stripeWebhooks = async (req, res) => {
-    const sig = req.headers['stripe-signature'];
+export const stripeWebhooks = async (request, response) => {
+    const sig = request.headers['stripe-signature'];
 
     let event;
     try {
-        event = stripeInstance.webhooks.constructEvent(
-            req.body, 
+        event = Stripe.webhooks.constructEvent(
+            request.body, 
             sig, 
             process.env.STRIPE_WEBHOOK_SECRET
         );
     }
     catch (err) {
-        console.error('Webhook signature verification failed:', err.message);
-        return res.status(400).send(`Webhook Error: ${err.message}`);
+        response.status(400).send(`Webhook Error: ${err.message}`);
     }
 
     console.log('Webhook event received:', event.type);
@@ -93,14 +96,13 @@ export const stripeWebhooks = async (req, res) => {
                 console.log('Payment Intent ID:', paymentIntentId);
 
                 // Retrieve sessions with the payment intent
-                const sessions = await stripeInstance.checkout.sessions.list({
+                const session = await stripeInstance.checkout.sessions.list({
                     payment_intent: paymentIntentId,
-                    limit: 1
                 });
 
-                console.log('Sessions found:', sessions.data.length);
+                console.log('Sessions found:', session.data.length);
 
-                if (!sessions.data || sessions.data.length === 0) {
+                if (!session.data || session.data.length === 0) {
                     console.error('No session found for payment intent:', paymentIntentId);
                     return res.status(404).json({ 
                         received: true, 
@@ -108,10 +110,7 @@ export const stripeWebhooks = async (req, res) => {
                     });
                 }
 
-                const session = sessions.data[0];
-                console.log('Session metadata:', session.metadata);
-
-                const { purchaseId } = session.metadata;
+                const { purchaseId } = session.data[0].metadata;
 
                 if (!purchaseId) {
                     console.error('No purchaseId in session metadata');
