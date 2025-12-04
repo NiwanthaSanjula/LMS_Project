@@ -1,10 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import uniqid from 'uniqid'
 import Quill from 'quill'
 import { Camera, Plus, Trash2, ChevronDown, X, FileText, Clock, ExternalLink, Lock, Unlock } from 'lucide-react'
+import { toast } from 'react-toastify'
+import axios from 'axios'
+import { AppContext } from '../../context/AppContext'
+import Loading from '../../components/student/Loading'
+
 
 const AddCourse = () => {
 
+  const { backendUrl, getToken } = useContext(AppContext)
   const quillRef = useRef(null);
   const editorRef = useRef(null);
 
@@ -15,6 +21,7 @@ const AddCourse = () => {
   const [chapters, setChapters] = useState([])
   const [showPopup, setShowPopup] = useState(false)
   const [currentChapterId, setCurrentChapterId] = useState(null)
+  const [loading, setLoading] = useState(false)
   
   const [lectureDetails, setLectureDetails] = useState(
     {
@@ -93,7 +100,48 @@ const AddCourse = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    try {
+      e.preventDefault()
+
+      if (!image) {
+        toast.error("Thumbnail not selected!")
+        return;
+      }
+
+      setLoading(true)  // start loading
+
+      const courseData = {
+        courseTitle,
+        courseDescription : quillRef.current.root.innerHTML ,
+        coursePrice: Number(coursePrice),
+        discount: Number(discount),
+        courseContent: chapters,
+      }
+
+      const formData = new FormData()
+      formData.append('courseData', JSON.stringify(courseData))
+      formData.append('image', image)
+
+      const token = await getToken();
+      const { data } = await axios.post( backendUrl + '/api/educator/add-course', formData, {headers: {Authorization: `Bearer ${token}`}})
+
+      if (data.success) {
+        toast.success(data.message)
+        setCourseTitle('')
+        setCoursePrice(0)
+        setDiscount(0)
+        setImage(null)
+        setChapters([])
+        quillRef.current.root.innerHTML = ""
+      }else {
+        toast.error(data.message)
+      }
+
+    } catch (error) {
+      toast.error(error.message)
+    } finally{
+      setLoading(false) // stop loading
+    }
 
 
   }
@@ -115,13 +163,21 @@ const AddCourse = () => {
 
   return (
     <div className='min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-4 md:p-8'>
+
+      {loading && (
+        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
+          <Loading /> {/* overlay loading spinner */}
+        </div>
+      )}
+
+
       <div className='max-w-5xl'>
         <div className='mb-8'>
           <h1 className='text-3xl font-bold text-slate-800 mb-2'>Create New Course</h1>
           <p className='text-slate-600'>Fill in the details below to add a new course to the platform</p>
         </div>
 
-        <div onSubmit={handleSubmit} className='space-y-6'>
+        <div className='space-y-6'>
           {/* Course Basic Info Card */}
           <div className='bg-white rounded-xl shadow-lg border-l-6 border-blue-600 p-6 md:p-8'>
             <h2 className='text-xl font-semibold text-slate-800 mb-6 flex items-center gap-2'>
@@ -336,10 +392,12 @@ const AddCourse = () => {
           {/* Submit Button */}
           <div className='flex justify-end'>
             <button
-              type='submit'
-              className='bg-linear-to-r from-green-600 to-green-700 text-white px-12 py-4 rounded-lg hover:from-green-700 hover:to-green-800 transition-all font-semibold shadow-md text-lg'
+              onClick={handleSubmit}
+              disabled={loading} // disable button while loading
+              className={`bg-linear-to-r from-green-600 to-green-700 text-white px-12 py-4 rounded-lg transition-all font-semibold shadow-md text-lg
+                        ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-green-700 hover:to-green-800'}`}           
             >
-              Create Course
+              {loading ? 'Creating...' : 'Create Course'}
             </button>
           </div>
         </div>

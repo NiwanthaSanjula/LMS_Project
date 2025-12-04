@@ -1,71 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/set-state-in-effect */
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Users, BookOpen, Calendar, TrendingUp, UserCheck, Clock, Filter } from 'lucide-react'
+import { AppContext } from '../../context/AppContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
-// Mock data for demonstration
-const dummyStudentEnrolled = [
-  {
-    student: { 
-      name: 'John Doe', 
-      imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
-      email: 'john@example.com'
-    },
-    courseTitle: 'Complete Web Development Bootcamp',
-    purchaseDate: '2024-11-15T10:30:00',
-    progress: 45
-  },
-  {
-    student: { 
-      name: 'Sarah Smith', 
-      imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-      email: 'sarah@example.com'
-    },
-    courseTitle: 'React Mastery Course',
-    purchaseDate: '2024-11-20T14:20:00',
-    progress: 78
-  },
-  {
-    student: { 
-      name: 'Mike Johnson', 
-      imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mike',
-      email: 'mike@example.com'
-    },
-    courseTitle: 'Python for Beginners',
-    purchaseDate: '2024-11-22T09:15:00',
-    progress: 23
-  },
-  {
-    student: { 
-      name: 'Emma Wilson', 
-      imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma',
-      email: 'emma@example.com'
-    },
-    courseTitle: 'UI/UX Design Fundamentals',
-    purchaseDate: '2024-11-25T16:45:00',
-    progress: 92
-  },
-  {
-    student: { 
-      name: 'David Brown', 
-      imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
-      email: 'david@example.com'
-    },
-    courseTitle: 'Data Science Bootcamp',
-    purchaseDate: '2024-11-28T11:00:00',
-    progress: 56
-  },
-  {
-    student: { 
-      name: 'Lisa Anderson', 
-      imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa',
-      email: 'lisa@example.com'
-    },
-    courseTitle: 'Advanced JavaScript Concepts',
-    purchaseDate: '2024-11-30T13:30:00',
-    progress: 34
-  }
-]
+
 
 const Loading = () => (
   <div className='min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100'>
@@ -78,15 +20,30 @@ const Loading = () => (
 
 const StudentsEnrolled = () => {
 
+  const { backendUrl, getToken, isEducator } = useContext(AppContext)
   const [enrolledStudent, setEnrolledStudent] = useState(null)
 
   const fetchEnrolledStudents = async () => {
-    setEnrolledStudent(dummyStudentEnrolled)
+    try {
+      const token = await getToken()
+      const { data } = await axios.get( backendUrl + '/api/educator/enrolled-students', {headers: {Authorization: `Bearer ${token}`}})
+
+      if (data.success) {
+        setEnrolledStudent(data.enrolledStudents.reverse())
+      } else {
+        toast.error(data.message)
+      }
+
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
   useEffect(() => {
-    fetchEnrolledStudents()
-  }, [])
+    if (isEducator) {
+      fetchEnrolledStudents()
+    }
+  }, [isEducator])
 
   // Calculate stats
   const totalEnrollments = enrolledStudent?.length || 0

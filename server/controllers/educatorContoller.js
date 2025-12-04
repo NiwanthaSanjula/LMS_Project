@@ -2,6 +2,7 @@ import {clerkClient} from '@clerk/express'
 import Course from '../models/course.js'
 import { v2 as cloudinary} from 'cloudinary'
 import { Purchase } from '../models/purchase.js'
+import User from '../models/user.js'
 
 
 
@@ -85,7 +86,7 @@ export const educatorDashboard = async (req, res) => {
         //Calculate total earnings from purchases
         const purchases = await Purchase.find({
             courseId: {$in: courseIds},   //Give me all purchases where the courseId matches ANY ID inside this array
-            status: 'Completed'
+            status: 'completed'
         })
 
         const totalEarnings = purchases.reduce((sum, purchase) => sum + purchase.amount, 0)
