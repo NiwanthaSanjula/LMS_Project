@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route, Routes, useMatch } from 'react-router-dom'
 import "quill/dist/quill.snow.css";
+import { ToastContainer } from 'react-toastify';
 
 
 import Home from './pages/student/Home'
@@ -23,6 +24,7 @@ const App = () => {
   return (
 
     <div className='text-default min-h-screen bg-white'>
+      <ToastContainer/>
 
       {!isEducatorRoute && <Navbar/> }
 
