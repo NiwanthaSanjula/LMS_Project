@@ -1,50 +1,13 @@
+
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import React, { useContext, useEffect, useState } from 'react'
 import { BookOpen, Users, DollarSign, Calendar, TrendingUp, Eye } from 'lucide-react'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { AppContext } from '../../context/AppContext'
 
-// Mock context for demonstration
-const AppContext = React.createContext({ 
-  currency: '$',
-  allCourses: [
-    {
-      _id: '1',
-      courseThumbnail: 'https://images.unsplash.com/photo-1516397281156-ca07cf9746fc?w=400',
-      courseTitle: 'Complete Web Development Bootcamp',
-      coursePrice: 99.99,
-      discount: 20,
-      enrolledStudents: Array(145).fill({}),
-      createdAt: '2024-01-15'
-    },
-    {
-      _id: '2',
-      courseThumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400',
-      courseTitle: 'Advanced React & Redux',
-      coursePrice: 79.99,
-      discount: 15,
-      enrolledStudents: Array(98).fill({}),
-      createdAt: '2024-02-20'
-    },
-    {
-      _id: '3',
-      courseThumbnail: 'https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=400',
-      courseTitle: 'Python for Data Science',
-      coursePrice: 89.99,
-      discount: 10,
-      enrolledStudents: Array(234).fill({}),
-      createdAt: '2024-03-10'
-    },
-    {
-      _id: '4',
-      courseThumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400',
-      courseTitle: 'UI/UX Design Masterclass',
-      coursePrice: 69.99,
-      discount: 25,
-      enrolledStudents: Array(76).fill({}),
-      createdAt: '2024-04-05'
-    }
-  ]
-})
+
 
 const Loading = () => (
   <div className='min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100'>
@@ -57,17 +20,30 @@ const Loading = () => (
 
 const MyCourses = () => {
 
-  const { currency, allCourses } = useContext(AppContext)
+  const { currency, backendUrl, isEducator, getToken } = useContext(AppContext)
 
   const [courses, setCourses] = useState(null)
 
   const fetchEducatorCourses = async () => {
-    setCourses(allCourses)
+    try {
+      const token = await getToken()
+      const { data } = await axios.get( backendUrl + '/api/educator/courses', {headers: {Authorization: `Bearer ${token}`}})
+
+      if (data.success) {
+        setCourses(data.courses)
+      }
+
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
   useEffect(() => {
+  if (isEducator) {
     fetchEducatorCourses()
-  }, [])
+  }
+    
+  }, [isEducator])
 
   // Calculate total stats
   const totalEarnings = courses?.reduce((sum, course) => 

@@ -1,21 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, { useContext, useEffect, useState } from 'react'
 import { Users, BookOpen, DollarSign, TrendingUp, Award } from 'lucide-react'
-
-// Mock context and data for demonstration
-const AppContext = React.createContext({ currency: '$' })
-
-const dummyDashboardData = {
-  enrolledStudentsData: [
-    { student: { name: 'John Doe', imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John' }, courseTitle: 'Complete Web Development' },
-    { student: { name: 'Sarah Smith', imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah' }, courseTitle: 'React Mastery Course' },
-    { student: { name: 'Mike Johnson', imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mike' }, courseTitle: 'Python for Beginners' },
-    { student: { name: 'Emma Wilson', imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma' }, courseTitle: 'UI/UX Design Fundamentals' },
-    { student: { name: 'David Brown', imageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David' }, courseTitle: 'Data Science Bootcamp' },
-  ],
-  totalCourses: 24,
-  totalEarnings: 45780
-}
+import { AppContext } from '../../context/AppContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const Loading = () => (
   <div className='min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100'>
@@ -28,18 +17,31 @@ const Loading = () => (
 
 const Dashboard = () => {
 
-  const { currency } = useContext(AppContext)
+  const { backendUrl, currency, getToken, isEducator  } = useContext(AppContext)
 
   const [dashboardData, setdashboardData] = useState(null)
 
   const fetchDashboardData = async () => {
-    setdashboardData(dummyDashboardData)
-    console.log(dummyDashboardData);
+    try {
+      const token = await getToken()
+      const { data } = await axios.get( backendUrl + '/api/educator/dashboard', {headers: {Authorization: `Bearer ${token}`}})
+
+      if (data.success) {
+        setdashboardData(data.dashboardData)
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+      
+    }
   }
 
   useEffect(() => {
-    fetchDashboardData()
-  }, [])
+    if (isEducator) {
+      fetchDashboardData()
+    }
+  }, [isEducator])
 
   return dashboardData ? (
     <div className='min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-4 md:p-8'>
