@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-hooks/set-state-in-effect */
+
 import React, { useContext, useEffect, useState } from 'react'
-import { Users, BookOpen, DollarSign, TrendingUp, Award } from 'lucide-react'
+import { Users, BookOpen, DollarSign, TrendingUp,TrendingDown, Award } from 'lucide-react'
 import { AppContext } from '../../context/AppContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -37,6 +37,17 @@ const Dashboard = () => {
     }
   }
 
+
+  // Helper function to get growth color and icon based on value
+  const getGrowthStyles = (growthValue) => {
+    const isPositive = growthValue >= 0
+    return {
+      color: isPositive ? 'text-green-600' : 'text-red-600',
+      icon: isPositive ? TrendingUp : TrendingDown,
+      text: isPositive ? '+' : ''
+    }
+  }
+
   useEffect(() => {
     if (isEducator) {
       fetchDashboardData()
@@ -62,10 +73,16 @@ const Dashboard = () => {
               <div className='p-3 bg-blue-100 rounded-lg'>
                 <Users className='w-6 h-6 text-blue-600' />
               </div>
-              <div className='flex items-center gap-1 text-green-600 text-sm font-medium'>
-                <TrendingUp className='w-4 h-4' />
-                <span>+12%</span>
-              </div>
+              {(() => {
+                const growth = getGrowthStyles(dashboardData.enrollmentsGrowth)
+                const IconComponent = growth.icon
+                return (
+                  <div className={`flex items-center gap-1 ${growth.color} text-sm font-medium`}>
+                    <IconComponent className='w-4 h-4' />
+                    <span>{growth.text}{Math.abs(dashboardData.enrollmentsGrowth)}%</span>
+                  </div>
+                )
+              })()}
             </div>
             <div>
               <p className='text-3xl font-bold text-slate-800 mb-1'>
@@ -82,10 +99,16 @@ const Dashboard = () => {
               <div className='p-3 bg-purple-100 rounded-lg'>
                 <BookOpen className='w-6 h-6 text-purple-600' />
               </div>
-              <div className='flex items-center gap-1 text-green-600 text-sm font-medium'>
-                <TrendingUp className='w-4 h-4' />
-                <span>+8%</span>
-              </div>
+              {(() => {
+                const growth = getGrowthStyles(dashboardData.coursesGrowth)
+                const IconComponent = growth.icon
+                return (
+                  <div className={`flex items-center gap-1 ${growth.color} text-sm font-medium`}>
+                    <IconComponent className='w-4 h-4' />
+                    <span>{growth.text}{Math.abs(dashboardData.coursesGrowth)}%</span>
+                  </div>
+                )
+              })()}
             </div>
             <div>
               <p className='text-3xl font-bold text-slate-800 mb-1'>
@@ -102,10 +125,17 @@ const Dashboard = () => {
               <div className='p-3 bg-green-100 rounded-lg'>
                 <DollarSign className='w-6 h-6 text-green-600' />
               </div>
-              <div className='flex items-center gap-1 text-green-600 text-sm font-medium'>
-                <TrendingUp className='w-4 h-4' />
-                <span>+24%</span>
-              </div>
+              {(() => {
+                const earningsGrowth = dashboardData.earningsGrowth ?? 0
+                const growth = getGrowthStyles(earningsGrowth)
+                const IconComponent = growth.icon
+                return (
+                  <div className={`flex items-center gap-1 ${growth.color} text-sm font-medium`}>
+                    <IconComponent className='w-4 h-4' />
+                    <span>{growth.text}{Math.abs(earningsGrowth)}%</span>
+                  </div>
+                )
+              })()}
             </div>
             <div>
               <p className='text-3xl font-bold text-slate-800 mb-1'>

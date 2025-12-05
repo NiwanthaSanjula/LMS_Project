@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-hooks/set-state-in-effect */
+
 
 import React, { useContext, useEffect, useState } from 'react'
 import { Users, BookOpen, Calendar, TrendingUp, UserCheck, Clock, Filter } from 'lucide-react'
@@ -47,14 +47,23 @@ const StudentsEnrolled = () => {
 
   // Calculate stats
   const totalEnrollments = enrolledStudent?.length || 0
+
   const recentEnrollments = enrolledStudent?.filter(student => {
     const enrollDate = new Date(student.purchaseDate)
-    const weekAgo = new Date()
-    weekAgo.setDate(weekAgo.getDate() - 7)
-    return enrollDate >= weekAgo
+    const now = new Date()
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+    return enrollDate >= weekAgo && enrollDate <= now
   }).length || 0
 
-  const averageProgress = enrolledStudent?.reduce((sum, student) => sum + (student.progress || 0), 0) / (enrolledStudent?.length || 1) || 0
+  // Calculate average progress from the progress field returned by backend
+  const averageProgress = enrolledStudent && enrolledStudent.length > 0
+  ? enrolledStudent.reduce((sum, student) => sum + (student.progress || 0), 0) / enrolledStudent.length
+  : 0
+
+  // Alternative: If you want to calculate from lecturesCompleted
+  /* const averageProgress = enrolledStudent && enrolledStudent.length > 0
+     /*? enrolledStudent.reduce((sum, student) => sum + (student.lecturesCompleted || 0), 0) / enrolledStudent.length
+     : 0*/
 
   return enrolledStudent ? (
     <div className='min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-4 md:p-8'>
